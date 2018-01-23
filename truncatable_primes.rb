@@ -22,8 +22,8 @@ end
 
 # calls sieve generator if sieve doesn't currently exist or is too small
 def sieve_init(n)
-  return sieve_of_eratosthenes(n) unless $sieve
-  return sieve_of_eratosthenes(n * 2) if n + 1 < $sieve.length
+  return sieve_of_eratosthenes(n * 2) unless $sieve
+  return sieve_of_eratosthenes(n * 2) if n + 1 > $sieve.length
   $sieve
 end
 
@@ -40,23 +40,43 @@ end
 
 # removes the front digit until there's one digit left and
 # checks if the number at each step is prime.
-def forwards_truncate(n)
-  digit_array = n.digits
+def forwards_truncate?(n)
+  digit_array = n.digits.reverse
   (digit_array.length - 1).times do
     digit_array.pop
-    p digit_array
     return false unless prime?(digit_array.join.to_i)
   end
   true
 end
 
 # same as above by last digit instead of first
-def backwards_truncate(n)
-    digit_array = n.digits
+def backwards_truncate?(n)
+  digit_array = n.digits.reverse
   (digit_array.length - 1).times do
     digit_array.shift
-    p digit_array
     return false unless prime?(digit_array.join.to_i)
   end
   true
 end
+
+def find_truncatable_primes()
+  $sieve = sieve_init(100000)
+  sum = 0
+  count = 0
+  total = 11
+  n = 10
+  while count < total
+    if truncatable_prime?(n)
+      count += 1
+      sum += n
+    end
+    n += 1
+  end
+  sum
+end
+
+start = Time.now
+output = find_truncatable_primes
+finish = Time.now
+puts output
+puts finish - start
